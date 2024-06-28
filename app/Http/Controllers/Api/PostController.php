@@ -23,8 +23,7 @@ class PostController extends Controller
     {
         $posts = Post::filter(request(['category' ,'searchKey']))
                 ->orderByDesc('created_at')
-                ->paginate(6);
-
+                ->get();
         $posts =  PostResource::collection($posts);
         return ResponseHelper::success($posts);
     }
@@ -36,10 +35,12 @@ class PostController extends Controller
         $validated = $request->validate([
             'title' => 'required',
             'description' => 'required' ,
-            'category_id' => 'required'
+            'category_id' => 'required',
+            'file_name' => 'required'
         ],
         [
-            'category_id.required' => 'The category field is required'
+            'category_id.required' => 'The category field is required',
+            'file_name.required' => 'The image field is required'
         ]);
         /**
          * DB transaction
@@ -89,7 +90,12 @@ class PostController extends Controller
      */
     public function destory($id)
     {
+        $user = auth()->user();
         $post = Post::find($id);
+
+        if ($user->id !== $post->user_id) {
+            return response()->json(['message' => 'Unauthorized oops'], 403);
+        }
         $post->delete();
         return ResponseHelper::success([], 'Deleted Success!');
     }

@@ -16,4 +16,11 @@ class ResponseHelper {
             'message' => $message
         ],422);
     }
+
+    public static function error($message)
+    {
+        return response()->json([
+            'message' => $message
+        ],401);
+    }
 }

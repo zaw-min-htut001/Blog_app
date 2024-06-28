@@ -56,6 +56,8 @@ class AuthController extends Controller
             return ResponseHelper::success([
                 'token' => $token,
             ]);
+        } else {
+            return ResponseHelper::fail('Invalid email or password.'); // Customize error message
         }
 
     }
